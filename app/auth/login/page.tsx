@@ -36,13 +36,20 @@ export default function AuthPage() {
           throw new Error("Password must be at least 6 characters")
         }
 
+        const baseRedirectUrl =
+          process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.length > 0
+            ? process.env.NEXT_PUBLIC_SITE_URL
+            : typeof window !== "undefined"
+              ? window.location.origin
+              : ""
+
+        const normalizedRedirect = `${baseRedirectUrl.replace(/\/$/, "")}/auth/callback`
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo:
-              process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
-              `${typeof window !== "undefined" ? window.location.origin : ""}`,
+            emailRedirectTo: normalizedRedirect,
           },
         })
         if (error) throw error
