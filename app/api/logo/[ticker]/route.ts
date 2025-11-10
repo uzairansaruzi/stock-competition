@@ -34,14 +34,19 @@ const fallbackLogo = (ticker: string) => {
   })
 }
 
-export async function GET(_request: NextRequest, context: { params: { ticker?: string } }) {
-  const ticker = context.params.ticker?.trim()
+type RouteParams = {
+  ticker: string
+}
 
-  if (!ticker) {
+export async function GET(_request: NextRequest, context: { params: Promise<RouteParams> }) {
+  const { ticker } = await context.params
+  const trimmed = ticker?.trim()
+
+  if (!trimmed) {
     return NextResponse.json({ error: "Ticker is required" }, { status: 400 })
   }
 
-  const sanitizedTicker = ticker.toUpperCase()
+  const sanitizedTicker = trimmed.toUpperCase()
   const remoteTicker = sanitizedTicker.toLowerCase()
 
   const cached = inMemoryCache.get(sanitizedTicker)
