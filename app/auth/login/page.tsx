@@ -23,14 +23,17 @@ export default function AuthPage() {
   const supabase = createClient()
 
   const getRedirectUrl = () => {
+    const fallbackOrigin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"
     const baseRedirectUrl =
       process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.length > 0
         ? process.env.NEXT_PUBLIC_SITE_URL
-        : typeof window !== "undefined"
-          ? window.location.origin
-          : ""
+        : fallbackOrigin
 
-    return `${baseRedirectUrl.replace(/\/$/, "")}/auth/callback`
+    try {
+      return new URL("/auth/callback", baseRedirectUrl).toString()
+    } catch {
+      return `${fallbackOrigin.replace(/\/$/, "")}/auth/callback`
+    }
   }
 
   const handleAuth = async (e: React.FormEvent) => {
