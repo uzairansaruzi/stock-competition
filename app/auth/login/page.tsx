@@ -18,11 +18,23 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const router = useRouter()
+  const supabase = createClient()
+
+  const getRedirectUrl = () => {
+    const baseRedirectUrl =
+      process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.length > 0
+        ? process.env.NEXT_PUBLIC_SITE_URL
+        : typeof window !== "undefined"
+          ? window.location.origin
+          : ""
+
+    return `${baseRedirectUrl.replace(/\/$/, "")}/auth/callback`
+  }
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
     setSuccess(null)
@@ -36,20 +48,11 @@ export default function AuthPage() {
           throw new Error("Password must be at least 6 characters")
         }
 
-        const baseRedirectUrl =
-          process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.length > 0
-            ? process.env.NEXT_PUBLIC_SITE_URL
-            : typeof window !== "undefined"
-              ? window.location.origin
-              : ""
-
-        const normalizedRedirect = `${baseRedirectUrl.replace(/\/$/, "")}/auth/callback`
-
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: normalizedRedirect,
+            emailRedirectTo: getRedirectUrl(),
           },
         })
         if (error) throw error
@@ -70,6 +73,31 @@ export default function AuthPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: getRedirectUrl(),
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
+      })
+
+      if (error) throw error
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Unable to start Google sign in")
+      setIsGoogleLoading(false)
+    }
+    // Supabase redirects on success, so we intentionally do not reset the loading state.
   }
 
   return (
@@ -126,6 +154,17 @@ export default function AuthPage() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (isSignUp ? "Creating account..." : "Logging in...") : isSignUp ? "Sign Up" : "Login"}
                   </Button>
+                  {!isSignUp && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      disabled={isGoogleLoading}
+                      onClick={handleGoogleSignIn}
+                    >
+                      {isGoogleLoading ? "Redirecting..." : "Continue with Google"}
+                    </Button>
+                  )}
                 </div>
               </form>
               <div className="mt-4 text-center text-sm">
