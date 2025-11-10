@@ -4,7 +4,7 @@ const LOGO_API_BASE = "https://img.logo.dev/ticker/"
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 // 24 hours
 
 type CacheEntry = {
-  buffer: Buffer
+  data: ArrayBuffer
   contentType: string
   expiresAt: number
 }
@@ -51,7 +51,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<Rout
 
   const cached = inMemoryCache.get(sanitizedTicker)
   if (cached && cached.expiresAt > Date.now()) {
-    return new NextResponse(cached.buffer, {
+    return new NextResponse(cached.data, {
       status: 200,
       headers: buildCacheHeaders(cached.contentType),
     })
@@ -79,16 +79,15 @@ export async function GET(_request: NextRequest, context: { params: Promise<Rout
     }
 
     const arrayBuffer = await response.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
     const contentType = response.headers.get("content-type") ?? "image/png"
 
     inMemoryCache.set(sanitizedTicker, {
-      buffer,
+      data: arrayBuffer,
       contentType,
       expiresAt: Date.now() + CACHE_TTL_MS,
     })
 
-    return new NextResponse(buffer, {
+    return new NextResponse(arrayBuffer, {
       status: 200,
       headers: buildCacheHeaders(contentType),
     })
