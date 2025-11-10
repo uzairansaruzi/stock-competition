@@ -47,7 +47,7 @@ export default function StockSelectionInterface({ userId }: StockSelection) {
 
       // Fetch entry prices for existing stocks
       if (picks && picks.length > 0) {
-        const tickers = picks.map((p) => p.ticker)
+        const tickers = picks.map((p: StockPick) => p.ticker)
         const prices: Record<string, number> = {}
         const sources: Record<string, boolean> = {}
         for (const t of tickers) {
