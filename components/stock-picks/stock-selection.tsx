@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
+import { StockLogo } from "@/components/dashboard/stock-logo"
 
 interface StockPick {
   id: string
@@ -157,6 +160,10 @@ export default function StockSelectionInterface({ userId }: StockSelection) {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
+        <Link href="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 max-w-fit">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Link>
         <h1 className="text-3xl font-bold">Select Your 10 Stocks</h1>
         {!competition ? (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -208,14 +215,17 @@ export default function StockSelectionInterface({ userId }: StockSelection) {
               <div className="space-y-3">
                 {stocks.map((stock) => (
                   <div key={stock.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <Badge className="mb-2">{stock.ticker}</Badge>
-                      {manualPriceSources[stock.ticker] && (
-                        <Badge variant="outline" className="ml-2 text-xs">
-                          Manual
-                        </Badge>
-                      )}
-                      <p className="text-sm text-muted-foreground mt-1">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-3">
+                        <StockLogo ticker={stock.ticker} size={36} className="shrink-0" />
+                        <Badge>{stock.ticker}</Badge>
+                        {manualPriceSources[stock.ticker] && (
+                          <Badge variant="outline" className="text-xs">
+                            Manual
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">
                         Entry: {formatCurrency(entryPrices[stock.ticker] || 0)} × {(stock.quantity || 0).toFixed(4)}{" "}
                         shares = {formatCurrency(1000)}
                       </p>
