@@ -70,7 +70,7 @@ export function StockLogo({ ticker, size = 32, className }: StockLogoProps) {
   const normalizedTicker = ticker?.toUpperCase().trim() ?? ""
   const remoteUrl = useMemo(() => {
     if (!normalizedTicker || !PUBLIC_LOGO_TOKEN) return null
-    return `https://img.logo.dev/ticker/${normalizedTicker.toLowerCase()}?token=${PUBLIC_LOGO_TOKEN}`
+    return `https://img.logo.dev/ticker/${normalizedTicker.toLowerCase()}?token=${PUBLIC_LOGO_TOKEN}&format=png&retina=true`
   }, [normalizedTicker])
 
   const fallbackColor = useMemo(() => {
