@@ -57,7 +57,7 @@ const steps: Step[] = [
 ]
 
 const stats: Stat[] = [
-  { value: "80+", label: "Active participants" },
+  { value: "15,000+", label: "Stocks, ETF, and more" },
   { value: "$250K", label: "Virtual capital tracked" },
   { value: "24/7", label: "Portfolio monitoring" },
 ]
@@ -69,14 +69,14 @@ export default function Home() {
         <section className="space-y-10 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200/70 bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 backdrop-blur dark:border-zinc-800 dark:bg-white/5 dark:text-blue-400">
             <span>Season 2026</span>
-            <span className="text-zinc-400">Powered by Supabase · Next.js</span>
+            <span className="text-zinc-400">Starting soon!</span>
           </div>
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-5xl">
               Run your stock-picking competition with live data, frictionless auth, and beautiful dashboards.
             </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 sm:text-xl">
-              The home base for admins and participants: submit trades, audit portfolios, and follow the leaderboard in
+              Submit trades, audit portfolios, and follow the leaderboard in
               one collaborative workspace.
             </p>
           </div>
